@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:project_4/pages/home_page.dart';
+import 'package:project_4/pages/login_page.dart';
 import 'package:project_4/pages/nav_page.dart';
 
 class App extends StatefulWidget {
@@ -24,9 +24,11 @@ class _AppState extends State<App> {
     });
 
     for (final res in restaurantList) {
-      final restaurantCollection = FirebaseFirestore.instance.collection('restaurant');
-      final resDoc = restaurantCollection.doc(res.id);
-      resDoc.set(res.toMap());
+      FirebaseFirestore.instance.collection('restaurant').doc(res.id).set(res.toMap());
+    }
+
+    for (final meal in meals) {
+      FirebaseFirestore.instance.collection('meal').doc(meal.id).set(meal.toMap());
     }
   }
 
@@ -71,6 +73,42 @@ class Restaurant {
   }
 }
 
+class Meal {
+  final String id;
+  final String name;
+  final String imageUrl;
+  final double price;
+  final String restaurantId;
+
+  const Meal({
+    required this.id,
+    required this.name,
+    required this.imageUrl,
+    required this.price,
+    required this.restaurantId,
+  });
+
+  factory Meal.fromMap(Map<String, dynamic> map) {
+    return Meal(
+      id: map['id'],
+      name: map['name'],
+      imageUrl: map['image_url'],
+      price: map['price'],
+      restaurantId: map['restaurant_id'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'image_url': imageUrl,
+      'price': price,
+      'restaurant_id': restaurantId,
+    };
+  }
+}
+
 const restaurantList = [
   Restaurant(
     id: '1',
@@ -86,5 +124,56 @@ const restaurantList = [
     id: '3',
     name: 'كودو',
     address: 'الشرقية، شارع الكورنيش',
+  ),
+];
+
+const meals = [
+  Meal(
+    id: '1',
+    name: 'شاورما',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 5,
+    restaurantId: '1',
+  ),
+  Meal(
+    id: '2',
+    name: 'شبرجر',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 7,
+    restaurantId: '1',
+  ),
+  Meal(
+    id: '3',
+    name: 'فروج',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 7,
+    restaurantId: '2',
+  ),
+  Meal(
+    id: '4',
+    name: 'بروستد',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 7,
+    restaurantId: '2',
+  ),
+  Meal(
+    id: '5',
+    name: 'بسبوسة',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 7,
+    restaurantId: '2',
+  ),
+  Meal(
+    id: '6',
+    name: 'كبسة',
+    imageUrl:
+        'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2676&q=80',
+    price: 7,
+    restaurantId: '2',
   ),
 ];

@@ -1,7 +1,13 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project_4/app.dart';
+import 'package:project_4/pages/orders_page.dart';
+import 'package:project_4/pages/restaurant_page.dart';
+
+import 'cart_page.dart';
 
 class NavPage extends StatefulWidget {
   const NavPage({super.key});
@@ -12,6 +18,7 @@ class NavPage extends StatefulWidget {
 
 class _NavPageState extends State<NavPage> {
   List<Restaurant> restaurants = [];
+  StreamSubscription? subscription;
 
   @override
   void initState() {
@@ -20,8 +27,14 @@ class _NavPageState extends State<NavPage> {
     listenToRestaurants();
   }
 
+  @override
+  void dispose() {
+    subscription?.cancel();
+    super.dispose();
+  }
+
   listenToRestaurants() {
-    FirebaseFirestore.instance.collection('meal').snapshots().listen((collection) {
+    subscription ??= FirebaseFirestore.instance.collection('restaurant').snapshots().listen((collection) {
       List<Restaurant> newList = [];
       for (final doc in collection.docs) {
         final restaurant = Restaurant.fromMap(doc.data());
@@ -47,6 +60,42 @@ class _NavPageState extends State<NavPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const CartPage();
+                  },
+                ),
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Icon(Icons.shopping_cart_checkout, size: 30),
+            ),
+          ),
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const OrdersPage();
+                  },
+                ),
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Icon(Icons.receipt_long_outlined, size: 30),
+            ),
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey,
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -81,18 +130,28 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: [
-          Text(
-            restaurant.name,
-            style: const TextStyle(fontSize: 40),
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RestaurantPage(restaurant: restaurant),
           ),
-          Text(
-            restaurant.address,
-            style: const TextStyle(fontSize: 20),
-          ),
-        ],
+        );
+      },
+      child: Card(
+        child: Column(
+          children: [
+            Text(
+              restaurant.name,
+              style: const TextStyle(fontSize: 40),
+            ),
+            Text(
+              restaurant.address,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
+        ),
       ),
     );
   }
