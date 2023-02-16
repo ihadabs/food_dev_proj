@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, this.title = ''});
@@ -30,6 +35,35 @@ class _LoginPageState extends State<LoginPage> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  /// Pick an image
+                  print('1: Pick an image');
+                  final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+                  /// Return if user canceled
+                  if (image == null) {
+                    print('2: User canceled');
+                    return;
+                  }
+
+                  /// Upload to firebase storage
+                  print('3: Uploading...');
+                  final ref = FirebaseStorage.instance.ref().child("bills/55/33.jpeg");
+                  await ref.putFile(File(image.path));
+                  final url = await ref.getDownloadURL();
+
+                  print('4: Save in Firestore');
+                  final profilesCollection = FirebaseFirestore.instance.collection('profile');
+                  final userProfileDocument = profilesCollection.doc(FirebaseAuth.instance.currentUser?.uid);
+                  userProfileDocument.set({'photo_url': url}, SetOptions(merge: true));
+                } catch (e) {
+                  print('GG Upload error: $e');
+                }
+              },
+              child: const Text('Upload imagee'),
+            ),
             if (isLoading)
               Container(
                 constraints: const BoxConstraints(maxWidth: 50, maxHeight: 50),

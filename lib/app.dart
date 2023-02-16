@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_4/pages/login_page.dart';
 import 'package:project_4/pages/nav_page.dart';
 
@@ -34,13 +35,14 @@ class _AppState extends State<App> {
       FirebaseFirestore.instance.collection('meal').doc(meal.id).set(meal.toMap());
     }
 
-    tryStorageUpload();
+    // tryStorageUpload();
   }
 
   tryStorageUpload() async {
     try {
       // Create a reference to the file to delete
-      final file = File('assets/bills/book_1.jpeg');
+      final appDocDir = await getApplicationDocumentsDirectory();
+      final file = File('${appDocDir.absolute}/assets/bills/book_1.jpeg');
 
       final ref = FirebaseStorage.instance.ref().child("bills/1/1.jpeg");
       ref.putFile(file);
