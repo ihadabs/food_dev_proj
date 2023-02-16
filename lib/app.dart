@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:project_4/pages/login_page.dart';
 import 'package:project_4/pages/nav_page.dart';
@@ -29,6 +32,32 @@ class _AppState extends State<App> {
 
     for (final meal in meals) {
       FirebaseFirestore.instance.collection('meal').doc(meal.id).set(meal.toMap());
+    }
+
+    tryStorageUpload();
+  }
+
+  tryStorageUpload() async {
+    try {
+      // Create a reference to the file to delete
+      final file = File('assets/bills/book_1.jpeg');
+
+      final ref = FirebaseStorage.instance.ref().child("bills/1/1.jpeg");
+      ref.putFile(file);
+    } catch (e) {
+      print('GG Upload error: $e');
+    }
+  }
+
+  tryStorageDelete() async {
+    try {
+      // Create a reference to the file to delete
+      final desertRef = FirebaseStorage.instance.ref().child("books_covers/yellow/yellow.avif");
+
+      // Delete the file
+      await desertRef.delete();
+    } catch (e) {
+      // print('Some error gg: $e');
     }
   }
 
